@@ -8,7 +8,8 @@ ENV HOME=/home/me
 ENV GOLANG_VERSION=1.18
 
 # Install Docker 
-# Source: https://docs.docker.com/engine/install/debian/
+# References: 
+#   - https://docs.docker.com/engine/install/debian/
 RUN \
   apt-get update && apt-get install -y \
     ca-certificates \
@@ -24,8 +25,16 @@ RUN \
     docker-ce-cli \
     docker-compose-plugin
 
+# Configure DOCKER_HOST
+# References: 
+#   - https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-socket-option
+#   - https://docs.docker.com/desktop/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host
+#   - https://github.com/docker/for-mac/issues/6464 (not supported on Docker Desktop for Mac)
+# ENV DOCKER_HOST="tcp://host.docker.internal:2375" 
+
 # Install Golang 
-# Source: https://go.dev/doc/install
+# References: 
+#   - https://go.dev/doc/install
 RUN \
   curl -LO https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz &&\
   tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz 
@@ -48,10 +57,13 @@ RUN \
   echo "${USER}  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/${USER}
 
 VOLUME /home/${USER}
-WORKDIR /home/${USER}
+VOLUME /var/run/docker.sock
+
 USER 501
+WORKDIR /home/${USER}
 ENTRYPOINT tmux
 
 # docker build -t calebhailey/workstation:latest .
 # docker build --build-arg USER=${USER} --build-arg UID=${UID} -t calebhailey/workstation:latest .
-# docker run --rm --name workstation -v ${HOME}:/home/me -it calebhailey/workstation:latest
+# docker run --rm -v ${HOME}:/home/me -it calebhailey/workstation:latest
+# docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v ${HOME}:/home/me -it calebhailey/workstation:latest

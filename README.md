@@ -17,12 +17,18 @@ This is my Docker-based development environment. It keeps my workstation free of
    docker build -t calebhailey/workstation:latest .
    ```
 
-   > _NOTE: optionally configure `--build USER=${USER}` and `--build-arg UID=${UID}` as needed._
+   > _NOTE: optionally configure `--build USER=${USER}` and `--build-arg UID=${UID}` as needed. See [`Dockerfile`](/Dockerfile) for more information._
 
 1. **Run the image** 
 
    ```
    docker run --rm -v ${HOME}:/home/me calebhailey/workstation:latest
+   ```
+
+   To execute `docker` commands from the Docker container, volume mount the Docker socket: 
+
+   ```
+   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v ${HOME}:/home/me -it calebhailey/workstation:latest
    ```
 
    > _NOTE: the `--rm` flag will automatically clean up the workstation Docker image when it is stopped, and the `-v ${HOME}:/home/me` flag volume mounts your home directory, presumably containing all of your project files._
