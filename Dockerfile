@@ -1,4 +1,4 @@
-# Development environment Docker image
+# Basic development environment Docker image
 FROM debian:buster 
 
 ARG USER=me
